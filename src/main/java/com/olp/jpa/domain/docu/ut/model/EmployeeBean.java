@@ -57,9 +57,9 @@ import org.hibernate.search.annotations.Store;
         , uniqueConstraints=@UniqueConstraint(columnNames={"tenant_id", "employee_number"}) // Enable constraint later
 )
 @NamedQueries({
-    @NamedQuery(name="UtEmployeeBean.findByDeptId", query="SELECT t FROM EmployeeBean t WHERE t.tenantId = :tenant AND departmentRef.id = :deptId"),
-    @NamedQuery(name="UtEmployeeBean.findByDeptCode", query="SELECT t FROM EmployeeBean t WHERE t.tenantId = :tenant AND departmentRef.deptCode = :deptCode"),
-    @NamedQuery(name="UtEmployeeBean.findByEmpCode", query="SELECT t FROM EmployeeBean t WHERE t.tenantId = :tenant AND employeeNumber = :empCode")
+    @NamedQuery(name="UtEmployeeBean.findByDeptId", query="SELECT t FROM EmployeeBean t WHERE t.tenantId = :tenant AND t.departmentRef.id = :deptId"),
+    @NamedQuery(name="UtEmployeeBean.findByDeptCode", query="SELECT t FROM EmployeeBean t WHERE t.tenantId = :tenant AND t.departmentRef.deptCode = :deptCode"),
+    @NamedQuery(name="UtEmployeeBean.findByEmpCode", query="SELECT t FROM EmployeeBean t WHERE t.tenantId = :tenant AND t.employeeNumber = :empCode")
     
 })
 @Cacheable(true)
@@ -144,10 +144,9 @@ public class EmployeeBean implements Serializable {
     
     
     @Embedded
-    //@Column(name="revision_control", nullable=false)
     @IndexedEmbedded
     private RevisionControlBean revisionControl;
-
+    
     
     public Long getId() {
         return id;

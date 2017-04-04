@@ -9,8 +9,8 @@
             <property name="hibernate.ogm.datastore.provider" value="mongodb" /> 
             
             <property name="hibernate.ogm.datastore.database" value="test" /> 
-            <!-- property name="hibernate.ogm.datastore.host" value="localhost" / --> 
-            <!-- property name="hibernate.ogm.datastore.port" value="27017" / -->
+            <property name="hibernate.ogm.datastore.host" value="localhost" /> 
+            <property name="hibernate.ogm.datastore.port" value="27017" />
             <property name="hibernate.ogm.datastore.username" value="prodhub" /> 
             <property name="hibernate.ogm.datastore.password" value="password" />
             <property name="hibernate.ogm.mongodb.connection_timeout" value="6000" />
