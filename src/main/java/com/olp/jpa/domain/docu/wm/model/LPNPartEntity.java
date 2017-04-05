@@ -1,9 +1,10 @@
-package com.olp.jpa.domain.docu.wm;
+package com.olp.jpa.domain.docu.wm.model;
 
 import java.util.Date;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,10 +23,12 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.FullTextFilterDef;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Store;
 
 import com.olp.annotations.KeyAttribute;
 import com.olp.annotations.MultiTenant;
+import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.TenantBasedSearchFilterFactory;
 import com.olp.jpa.domain.docu.inv.model.ProductSkuEntity;
 
@@ -124,6 +127,10 @@ public class LPNPartEntity {
   })
   private LPNumberEntity childLpnRef;
 
+  @Embedded
+  @IndexedEmbedded
+  private RevisionControlBean revisionControl;
+  
   public Long getId() {
     return id;
   }
@@ -212,6 +219,20 @@ public class LPNPartEntity {
     this.childLpnRef = childLpnRef;
   }
   
+  /**
+   * @return the revisionControl
+   */
+  public RevisionControlBean getRevisionControl() {
+    return revisionControl;
+  }
+
+  /**
+   * @param revisionControl the revisionControl to set
+   */
+  public void setRevisionControl(RevisionControlBean revisionControl) {
+    this.revisionControl = revisionControl;
+  }
+
   public LPNPart convertTo() {
     
     LPNPart bean = new LPNPart();
@@ -219,9 +240,9 @@ public class LPNPartEntity {
     bean.setId(this.id);
     bean.setTenantId(this.tenantId);
     bean.setBatchNumber(batchNumber);
-    bean.setChildLpnRef(childLpnRef);
-    bean.setLpnRef(lpnRef);
-    bean.setProductSkuRef(productSkuRef);
+    bean.setChildLpnCode(childLpnRef.getLpnCode());
+    bean.setLpnCode(lpnRef.getLpnCode());
+    bean.setProductSkuCode(productSkuRef.getSource());
     bean.setQuantity(quantity);
     bean.setSerialNumber(serialNumber);
     bean.setSupplierRef(supplierRef);

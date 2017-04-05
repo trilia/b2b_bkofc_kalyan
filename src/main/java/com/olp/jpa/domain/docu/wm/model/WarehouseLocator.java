@@ -1,7 +1,11 @@
-package com.olp.jpa.domain.docu.wm;
+package com.olp.jpa.domain.docu.wm.model;
 
 import javax.persistence.Embedded;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.hibernate.search.annotations.IndexedEmbedded;
 
@@ -13,6 +17,9 @@ import com.olp.jpa.common.RevisionControlBean;
  * (C) Copyright My Inc. 2017
  */
 
+@XmlRootElement(name="warehouse-loc", namespace="http://trilia-cloud.com/schema/entity/wm")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(propOrder={ "id", "tenantId", "zoneRef", "rowValue", "rackValue", "binValue", "isEnabled", "revisionControl" })
 public class WarehouseLocator {
 
   @XmlElement(name="warehouse-id")
@@ -22,7 +29,7 @@ public class WarehouseLocator {
   private Long tenantId;
   
   @XmlElement(name="zone-code")
-  private WarehouseZoneEntity zoneRef;
+  private String zoneCode;
   
   @XmlElement(name="row-value")
   private String rowValue;
@@ -67,17 +74,17 @@ public class WarehouseLocator {
   }
 
   /**
-   * @return the zoneRef
+   * @return the zoneCode
    */
-  public WarehouseZoneEntity getZoneRef() {
-    return zoneRef;
+  public String getZoneCode() {
+    return zoneCode;
   }
 
   /**
-   * @param zoneRef the zoneRef to set
+   * @param zoneCode the zoneCode to set
    */
-  public void setZoneRef(WarehouseZoneEntity zoneRef) {
-    this.zoneRef = zoneRef;
+  public void setZoneCode(String zoneCode) {
+    this.zoneCode = zoneCode;
   }
 
   /**
@@ -161,7 +168,9 @@ public class WarehouseLocator {
     bean.setRackValue(this.rackValue);
     bean.setRowValue(this.rowValue);
     bean.setRevisionControl(this.revisionControl);
-    bean.setZoneRef(this.zoneRef);
+    WarehouseZoneEntity zoneRef= new WarehouseZoneEntity();
+    zoneRef.setZoneCode(zoneCode);
+    bean.setZoneRef(zoneRef);
     
     return(bean);
   }

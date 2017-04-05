@@ -1,4 +1,4 @@
-package com.olp.jpa.domain.docu.wm;
+package com.olp.jpa.domain.docu.wm.model;
 
 import java.util.Date;
 
@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.domain.docu.inv.model.ProductSkuEntity;
 
 /*
@@ -18,9 +19,9 @@ import com.olp.jpa.domain.docu.inv.model.ProductSkuEntity;
  * @author raghosh
  */
 
-@XmlRootElement(name="lpn", namespace="http://trilia-cloud.com/schema/entity/ut/ut-lpn")
+@XmlRootElement(name="lpn-part", namespace="http://trilia-cloud.com/schema/entity/wm")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"id", "lpnCode", "description", "revisionControl", "employees"})
+@XmlType(propOrder={ "id", "tenantId", "productSkuCode", "quantity", "uom", "batchNumber", "validityDate", "serialNumber", "supplierRef", "lpnCode", "childLpnCode", "revisionControl" })
 public class LPNPart {
 
   @XmlElement(name="lpn-part-id")
@@ -29,8 +30,8 @@ public class LPNPart {
   @XmlElement(name="tenant-id")
   private Long tenantId;
   
-  @XmlElement(name="dept-product-sku-code")
-  private ProductSkuEntity productSkuRef;
+  @XmlElement(name="product-sku-code")
+  private String productSkuCode;
   
   @XmlElement(name="quantity")
   private Integer quantity;
@@ -51,11 +52,13 @@ public class LPNPart {
   private String supplierRef;
   
   @XmlElement(name="lpn-code")
-  private LPNumberEntity lpnRef;
+  private String lpnCode;
   
   @XmlElement(name="child-lpn-code")
-  private LPNumberEntity childLpnRef;
-
+  private String childLpnCode;
+  
+  private RevisionControlBean revisionControl;
+  
   public Long getId() {
     return id;
   }
@@ -72,12 +75,12 @@ public class LPNPart {
     this.tenantId = tenantId;
   }
 
-  public ProductSkuEntity getProductSkuRef() {
-    return productSkuRef;
+  public String getProductSkuCode() {
+    return productSkuCode;
   }
 
-  public void setProductSkuRef(ProductSkuEntity productSkuRef) {
-    this.productSkuRef = productSkuRef;
+  public void setProductSkuCode(String productSkuCode) {
+    this.productSkuCode = productSkuCode;
   }
 
   public Integer getQuantity() {
@@ -128,22 +131,30 @@ public class LPNPart {
     this.supplierRef = supplierRef;
   }
 
-  public LPNumberEntity getLpnRef() {
-    return lpnRef;
+  public String getLpnCode() {
+    return lpnCode;
   }
 
-  public void setLpnRef(LPNumberEntity lpnRef) {
-    this.lpnRef = lpnRef;
+  public void setLpnCode(String lpnCode) {
+    this.lpnCode = lpnCode;
   }
 
-  public LPNumberEntity getChildLpnRef() {
-    return childLpnRef;
+  public String getChildLpnCode() {
+    return childLpnCode;
   }
 
-  public void setChildLpnRef(LPNumberEntity childLpnRef) {
-    this.childLpnRef = childLpnRef;
+  public void setChildLpnCode(String childLpnCode) {
+    this.childLpnCode = childLpnCode;
   }
   
+  public RevisionControlBean getRevisionControl() {
+    return revisionControl;
+  }
+
+  public void setRevisionControl(RevisionControlBean revisionControl) {
+    this.revisionControl = revisionControl;
+  }
+
   public LPNPartEntity convertTo() {
     
     LPNPartEntity bean = new LPNPartEntity();
@@ -151,9 +162,19 @@ public class LPNPart {
     bean.setId(this.id);
     bean.setTenantId(this.tenantId);
     bean.setBatchNumber(batchNumber);
-    bean.setChildLpnRef(childLpnRef);
-    bean.setLpnRef(lpnRef);
-    bean.setProductSkuRef(productSkuRef);
+    
+    LPNumberEntity childLpn = new LPNumberEntity();
+    childLpn.setLpnCode(this.childLpnCode);
+    bean.setLpnRef(childLpn);
+        
+    LPNumberEntity lpn = new LPNumberEntity();
+    lpn.setLpnCode(this.lpnCode);
+    bean.setLpnRef(lpn);
+    
+    ProductSkuEntity sku = new ProductSkuEntity();
+    sku.setSource(this.productSkuCode);
+    bean.setProductSkuRef(sku);
+    
     bean.setQuantity(quantity);
     bean.setSerialNumber(serialNumber);
     bean.setSupplierRef(supplierRef);

@@ -1,5 +1,6 @@
-package com.olp.jpa.domain.docu.wm;
+package com.olp.jpa.domain.docu.wm.model;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -321,8 +322,13 @@ public class WarehouseZoneEntity {
     bean.setZoneSubType(zoneSubType);
     bean.setZoneType(zoneType);
     bean.setRevisionControl(this.revisionControl);
-    bean.setLocators(this.locators);
     
+    List<String> locatorList = new ArrayList<>();
+    for(WarehouseLocatorEntity locator : this.locators) {
+      locatorList.add(locator.getZoneRef().getZoneCode());
+    }
+    bean.setLocators(locatorList);
+
     return(bean);
   }
 

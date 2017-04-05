@@ -1,5 +1,6 @@
-package com.olp.jpa.domain.docu.wm;
+package com.olp.jpa.domain.docu.wm.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -19,9 +20,9 @@ import com.olp.jpa.domain.docu.org.model.OrganizationEntity;
  * @author raghosh
  */
 
-@XmlRootElement(name="lpn", namespace="http://trilia-cloud.com/schema/entity/ut/ut-lpn")
+@XmlRootElement(name="warehouse", namespace="http://trilia-cloud.com/schema/entity/wm")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"id", "lpnCode", "description", "revisionControl", "employees"})
+@XmlType(propOrder={ "id", "tenantId", "warehouseCode", "warehouseName", "organizationRef", "wmControlEnabled", "revisionControl", "zones" })
 public class Warehouse {
 
   private static final long serialVersionUID = -1L;
@@ -39,7 +40,7 @@ public class Warehouse {
   private String warehouseName;
 
   @XmlElement(name="organization-code")
-  private OrganizationEntity organizationRef;
+  private String organizationCode;
 
   @XmlElement(name="wm-control-flag")
   private Boolean wmControlEnabled;
@@ -47,7 +48,7 @@ public class Warehouse {
   private RevisionControlBean revisionControl;
 
   @XmlElement(name="zone")
-  private List<WarehouseZoneEntity> zones;
+  private List<String> zone;
 
   public Long getId() {
     return id;
@@ -81,12 +82,12 @@ public class Warehouse {
     this.warehouseName = warehouseName;
   }
 
-  public OrganizationEntity getOrganizationRef() {
-    return organizationRef;
+  public String getOrganizationCode() {
+    return organizationCode;
   }
 
-  public void setOrganizationRef(OrganizationEntity organizationRef) {
-    this.organizationRef = organizationRef;
+  public void setOrganizationCode(String organizationCode) {
+    this.organizationCode = organizationCode;
   }
 
   public Boolean getWmControlEnabled() {
@@ -105,12 +106,12 @@ public class Warehouse {
     this.revisionControl = revisionControl;
   }
 
-  public List<WarehouseZoneEntity> getZones() {
-    return zones;
+  public List<String> getZone() {
+    return zone;
   }
 
-  public void setZones(List<WarehouseZoneEntity> zones) {
-    this.zones = zones;
+  public void setZone(List<String> zone) {
+    this.zone = zone;
   }
 
   public WarehouseEntity convertTo() {
@@ -119,11 +120,22 @@ public class Warehouse {
     
     bean.setId(this.id);
     bean.setTenantId(this.tenantId);
+    
+    OrganizationEntity organizationRef = new OrganizationEntity();
+    organizationRef.setOrgCode(organizationCode);
     bean.setOrganizationRef(organizationRef);
+    
     bean.setWarehouseCode(warehouseCode);
     bean.setWarehouseName(warehouseName);
     bean.setWmControlEnabled(wmControlEnabled);
     bean.setRevisionControl(revisionControl);
+    
+    List<WarehouseZoneEntity> zones = new ArrayList<>();
+    for(String zoneCode : zone) {
+      WarehouseZoneEntity warehouseZoneEntity = new WarehouseZoneEntity();
+      warehouseZoneEntity.setZoneCode(zoneCode);
+      zones.add(warehouseZoneEntity);
+    }
     bean.setZones(zones);
     
     return(bean);

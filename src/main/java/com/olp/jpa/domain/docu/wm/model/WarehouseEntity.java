@@ -1,5 +1,6 @@
-package com.olp.jpa.domain.docu.wm;
+package com.olp.jpa.domain.docu.wm.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Cacheable;
@@ -167,12 +168,17 @@ public class WarehouseEntity {
     
     bean.setId(this.id);
     bean.setTenantId(this.tenantId);
-    bean.setOrganizationRef(organizationRef);
+    bean.setOrganizationCode(organizationRef.getOrgCode());
     bean.setWarehouseCode(warehouseCode);
     bean.setWarehouseName(warehouseName);
     bean.setWmControlEnabled(wmControlEnabled);
     bean.setRevisionControl(revisionControl);
-    bean.setZones(zones);
+    
+    List<String> zoneCodes = new ArrayList<>();
+    for(WarehouseZoneEntity zone : zones) {
+      zoneCodes.add(zone.getZoneCode());
+    }
+    bean.setZone(zoneCodes);
     
     return(bean);
   }

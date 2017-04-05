@@ -1,5 +1,6 @@
-package com.olp.jpa.domain.docu.wm;
+package com.olp.jpa.domain.docu.wm.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -7,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import com.olp.jpa.common.RevisionControlBean;
 
 /*
  * Trilla Inc Confidential
@@ -16,9 +19,9 @@ import javax.xml.bind.annotation.XmlType;
  * @author raghosh
  */
 
-@XmlRootElement(name="lpn", namespace="http://trilia-cloud.com/schema/entity/ut/ut-lpn")
+@XmlRootElement(name="lpn-number", namespace="http://trilia-cloud.com/schema/entity/wm")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"id", "lpnCode", "description", "revisionControl", "employees"})
+@XmlType(propOrder={ "id", "tenantId", "lpnCode", "supplierLpn", "warehouseRef", "warehouseCode", "isEnabled", "revisionControl", "lpnParts" })
 public class LPNumber {
 
   @XmlElement(name="lpn-id")
@@ -42,10 +45,10 @@ public class LPNumber {
   @XmlElement(name="enabled-flag")
   private Boolean isEnabled;
   
-  private Long revisionControl;
+  private RevisionControlBean revisionControl;
   
   @XmlElement(name="lpn-part")
-  private List<LPNPartEntity> lpnParts;
+  private List<String> lpnParts;
 
   public Long getId() {
     return id;
@@ -103,19 +106,19 @@ public class LPNumber {
     this.isEnabled = isEnabled;
   }
 
-  public Long getRevisionControl() {
+  public RevisionControlBean getRevisionControl() {
     return revisionControl;
   }
 
-  public void setRevisionControl(Long revisionControl) {
+  public void setRevisionControl(RevisionControlBean revisionControl) {
     this.revisionControl = revisionControl;
   }
 
-  public List<LPNPartEntity> getLpnParts() {
+  public List<String> getLpnParts() {
     return lpnParts;
   }
 
-  public void setLpnParts(List<LPNPartEntity> lpnParts) {
+  public void setLpnParts(List<String> lpnParts) {
     this.lpnParts = lpnParts;
   }
   
@@ -125,6 +128,21 @@ public class LPNumber {
     
     bean.setId(this.id);
     bean.setTenantId(this.tenantId);
+    bean.setIsEnabled(this.isEnabled);
+    bean.setLpnCode(this.lpnCode);
+    List<LPNPartEntity> lpnPartEntityList = new ArrayList<>();
+    for(String lpnPart : lpnParts) {
+      LPNPartEntity lpnPartEntity = new LPNPartEntity();
+      LPNumberEntity lpNumberEntity = new LPNumberEntity();
+      lpNumberEntity.setLpnCode(lpnPart);
+      lpnPartEntity.setLpnRef(lpNumberEntity);
+      lpnPartEntityList.add(lpnPartEntity);
+    }
+    bean.setLpnParts(lpnPartEntityList);
+    bean.setRevisionControl(revisionControl);
+    bean.setSupplierLpn(supplierLpn);
+    bean.setWarehouseCode(warehouseCode);
+    bean.setWarehouseRef(warehouseRef);
     
     return(bean);
   }

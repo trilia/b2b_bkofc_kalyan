@@ -1,9 +1,16 @@
-package com.olp.jpa.domain.docu.wm;
+package com.olp.jpa.domain.docu.wm.model;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import org.hibernate.hql.ast.origin.hql.parse.HQLParser.additiveExpression_return;
 
 import com.olp.jpa.common.RevisionControlBean;
 
@@ -13,6 +20,9 @@ import com.olp.jpa.common.RevisionControlBean;
  * (C) Copyright My Inc. 2017
  */
 
+@XmlRootElement(name="warehouse-zone", namespace="http://trilia-cloud.com/schema/entity/wm")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(propOrder={ "id", "tenantId", "zoneCode", "zoneName", "zoneType", "zoneSubType", "subInventory", "islocatorEnabled", "allowDynamicLocator", "warehouseRef", "warehouseCode", "revisionControl", "locators" })
 public class WarehouseZone {
 
   @XmlElement(name="zone-id")
@@ -50,7 +60,7 @@ public class WarehouseZone {
   private RevisionControlBean revisionControl;
   
   @XmlElement(name="locator")
-  private List<WarehouseLocatorEntity> locators;
+  private List<String> locators;
 
   /**
    * @return the id
@@ -223,14 +233,14 @@ public class WarehouseZone {
   /**
    * @return the locators
    */
-  public List<WarehouseLocatorEntity> getLocators() {
+  public List<String> getLocators() {
     return locators;
   }
 
   /**
    * @param locators the locators to set
    */
-  public void setLocators(List<WarehouseLocatorEntity> locators) {
+  public void setLocators(List<String> locators) {
     this.locators = locators;
   }
 
@@ -250,7 +260,16 @@ public class WarehouseZone {
     bean.setZoneSubType(zoneSubType);
     bean.setZoneType(zoneType);
     bean.setRevisionControl(this.revisionControl);
-    bean.setLocators(this.locators);
+    
+    List<WarehouseLocatorEntity> locatorList = new ArrayList<>();
+    for(String locatorCode : this.locators) {
+      WarehouseLocatorEntity locator = new WarehouseLocatorEntity();
+      WarehouseZoneEntity zone = new WarehouseZoneEntity();
+      zone.setZoneCode(locatorCode);
+      locator.setZoneRef(zone);
+      locatorList.add(locator);
+    }
+    bean.setLocators(locatorList);
     
     return(bean);
   }
