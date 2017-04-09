@@ -1,4 +1,4 @@
-package com.olp.jpa.domain.docu.wm.model;
+package com.olp.jpa.domain.docu.wm.repo.model;
 
 import javax.persistence.Embedded;
 import javax.xml.bind.annotation.XmlAccessType;

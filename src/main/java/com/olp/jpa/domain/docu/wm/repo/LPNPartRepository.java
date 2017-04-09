@@ -3,11 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.olp.jpa.domain.docu.wm;
+package com.olp.jpa.domain.docu.wm.repo;
 
 import com.olp.jpa.common.ITextRepository;
-import com.olp.jpa.domain.docu.ut.model.DepartmentBean;
-import com.olp.jpa.domain.docu.wm.model.WarehouseEntity;
+import com.olp.jpa.domain.docu.wm.repo.model.LPNPartEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -17,8 +16,6 @@ import org.springframework.data.repository.NoRepositoryBean;
  * @author raghosh
  */
 @NoRepositoryBean
-public interface WarehouseRepository extends JpaRepository<WarehouseEntity, Long>, ITextRepository<WarehouseEntity, Long> {
-    
-    public WarehouseEntity findByWarehouseCode(String warehouseCode, String tenant);
+public interface LPNPartRepository extends JpaRepository<LPNPartEntity, Long>, ITextRepository<LPNPartEntity, Long> {
     
 }

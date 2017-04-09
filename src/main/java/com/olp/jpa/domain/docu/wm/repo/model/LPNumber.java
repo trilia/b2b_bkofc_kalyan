@@ -1,4 +1,4 @@
-package com.olp.jpa.domain.docu.wm.model;
+package com.olp.jpa.domain.docu.wm.repo.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +37,6 @@ public class LPNumber {
   private String supplierLpn;
   
   @XmlElement(name="warehouse-code")
-  private WarehouseEntity warehouseRef;
-  
-  //@XmlElement(name="warehouse-code")
   private String warehouseCode;
   
   @XmlElement(name="enabled-flag")
@@ -80,14 +77,6 @@ public class LPNumber {
 
   public void setSupplierLpn(String supplierLpn) {
     this.supplierLpn = supplierLpn;
-  }
-
-  public WarehouseEntity getWarehouseRef() {
-    return warehouseRef;
-  }
-
-  public void setWarehouseRef(WarehouseEntity warehouseRef) {
-    this.warehouseRef = warehouseRef;
   }
 
   public String getWarehouseCode() {
@@ -141,7 +130,8 @@ public class LPNumber {
     bean.setLpnParts(lpnPartEntityList);
     bean.setRevisionControl(revisionControl);
     bean.setSupplierLpn(supplierLpn);
-    bean.setWarehouseCode(warehouseCode);
+    WarehouseEntity warehouseRef = new WarehouseEntity();
+    warehouseRef.setWarehouseCode(warehouseCode);
     bean.setWarehouseRef(warehouseRef);
     
     return(bean);

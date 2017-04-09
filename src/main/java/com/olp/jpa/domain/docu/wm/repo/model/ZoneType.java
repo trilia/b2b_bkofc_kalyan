@@ -1,4 +1,4 @@
-package com.olp.jpa.domain.docu.wm.model;
+package com.olp.jpa.domain.docu.wm.repo.model;
 
 /*
  * Trilla Inc Confidential

@@ -1,157 +1,95 @@
-package com.olp.jpa.domain.docu.wm.model;
+package com.olp.jpa.domain.docu.wm.repo.model;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.FullTextFilterDef;
-import org.hibernate.search.annotations.Index;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Store;
+import org.hibernate.hql.ast.origin.hql.parse.HQLParser.additiveExpression_return;
 
-import com.olp.annotations.KeyAttribute;
-import com.olp.annotations.MultiTenant;
 import com.olp.jpa.common.RevisionControlBean;
-import com.olp.jpa.common.TenantBasedSearchFilterFactory;
 
 /*
- * Trilla Inc Confidential
- * Class: WarehouseZoneEntity.java
- * (C) Copyright Trilla Inc. 2017
- * 
- * @author raghosh
+ * My Inc Confidential
+ * Class: WarehouseZone.java
+ * (C) Copyright My Inc. 2017
  */
 
-@Entity
-@Table(name="trl_warehouse_zones"
-      , uniqueConstraints=@UniqueConstraint(columnNames={"tenant_id", "warehouse_code"})
-)
-@NamedQueries({
-   @NamedQuery(name="WarehouseZoneEntity.findByLocatorCode", query="SELECT t from WarehouseZoneEntity t WHERE t.warehouseCode = :code and t.zoneCode = :locCode")
-})
-@Cacheable(true)
-@Indexed(index="UnitTest")
-@FullTextFilterDef(name="filter-dept-by-tenant", impl=TenantBasedSearchFilterFactory.class)
-@MultiTenant(level = MultiTenant.Levels.ONE_TENANT)
-public class WarehouseZoneEntity {
+@XmlRootElement(name="warehouse-zone", namespace="http://trilia-cloud.com/schema/entity/wm")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(propOrder={ "id", "tenantId", "zoneCode", "zoneName", "zoneType", "zoneSubType", "subInventory", "islocatorEnabled", "allowDynamicLocator", "warehouseRef", "warehouseCode", "revisionControl", "locators" })
+public class WarehouseZone {
 
-  private static final long serialVersionUID = -1L;
-  
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name="zone_id", nullable=false)
-  @DocumentId
+  @XmlElement(name="zone-id")
   private Long id;
-
-  @KeyAttribute
-  @Column(name="tenant_id", nullable=false)
-  @Field(analyze=Analyze.NO, store = Store.YES)
+  
+  @XmlElement(name="tenant-id")
   private Long tenantId;
-
-  @Column(name="zone_code", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="zone-code", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
+  
+  @XmlElement(name="zone-code")
   private String zoneCode;
   
-  @Column(name="zone_name", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="zone-name", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
+  @XmlElement(name="zone-name")
   private String zoneName;
   
-  @Column(name="zone_type", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="zone-type", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
-  private Enumeration<ZoneType>  zoneType;
+  @XmlElement(name="zone-type")
+  private Enumeration<ZoneType> zoneType;
   
-  @Column(name="zone_sub_type", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="zone-sub-type", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
+  @XmlElement(name="zone-sub-type")
   private String zoneSubType;
   
-  @Column(name="sub_inventory", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="sub-inventory", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
+  @XmlElement(name="sub-inventory")
   private String subInventory;
   
-  @Column(name="locator_enabled", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="locator-enabled", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
+  @XmlElement(name="locator-enabled")
   private Boolean islocatorEnabled;
   
-  @Column(name="allow_dynamic_locator", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="allow-dynamic-locator", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
+  @XmlElement(name="allow-dynamic-locator")
   private Boolean allowDynamicLocator;
   
-  @ManyToOne
-  @JoinColumn(name="warehouse_ref")
-  @ContainedIn
+  @XmlElement(name="warehouse-code")
   private WarehouseEntity warehouseRef;
   
-  @Column(name="warehouse_code", nullable=false)
   private String warehouseCode;
   
-  @Embedded
-  @IndexedEmbedded
   private RevisionControlBean revisionControl;
   
-  @OneToMany(mappedBy="zoneRef", cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
-  @IndexedEmbedded(includeEmbeddedObjectId=true, depth=1)
-  private List<WarehouseLocatorEntity> locators;
-  
-  
+  @XmlElement(name="locator")
+  private List<String> locators;
+
+  /**
+   * @return the id
+   */
   public Long getId() {
     return id;
   }
 
+  /**
+   * @param id the id to set
+   */
   public void setId(Long id) {
     this.id = id;
   }
 
+  /**
+   * @return the tenantId
+   */
   public Long getTenantId() {
     return tenantId;
   }
 
+  /**
+   * @param tenantId the tenantId to set
+   */
   public void setTenantId(Long tenantId) {
     this.tenantId = tenantId;
   }
-  
+
   /**
    * @return the zoneCode
    */
@@ -295,20 +233,20 @@ public class WarehouseZoneEntity {
   /**
    * @return the locators
    */
-  public List<WarehouseLocatorEntity> getLocators() {
+  public List<String> getLocators() {
     return locators;
   }
 
   /**
    * @param locators the locators to set
    */
-  public void setLocators(List<WarehouseLocatorEntity> locators) {
+  public void setLocators(List<String> locators) {
     this.locators = locators;
   }
 
-  public WarehouseZone convertTo() {
+  public WarehouseZoneEntity convertTo() {
     
-    WarehouseZone bean = new WarehouseZone();
+    WarehouseZoneEntity bean = new WarehouseZoneEntity();
     
     bean.setId(this.id);
     bean.setTenantId(this.tenantId);
@@ -323,12 +261,16 @@ public class WarehouseZoneEntity {
     bean.setZoneType(zoneType);
     bean.setRevisionControl(this.revisionControl);
     
-    List<String> locatorList = new ArrayList<>();
-    for(WarehouseLocatorEntity locator : this.locators) {
-      locatorList.add(locator.getZoneRef().getZoneCode());
+    List<WarehouseLocatorEntity> locatorList = new ArrayList<>();
+    for(String locatorCode : this.locators) {
+      WarehouseLocatorEntity locator = new WarehouseLocatorEntity();
+      WarehouseZoneEntity zone = new WarehouseZoneEntity();
+      zone.setZoneCode(locatorCode);
+      locator.setZoneRef(zone);
+      locatorList.add(locator);
     }
     bean.setLocators(locatorList);
-
+    
     return(bean);
   }
 

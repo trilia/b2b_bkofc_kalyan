@@ -1,6 +1,10 @@
-package com.olp.jpa.domain.docu.wm.model;
+package com.olp.jpa.domain.docu.wm.repo.model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -10,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -31,29 +37,30 @@ import com.olp.jpa.common.TenantBasedSearchFilterFactory;
 
 /*
  * Trilla Inc Confidential
- * Class: WarehouseLocatorEntity.java
+ * Class: LPNumberEntity.java
  * (C) Copyright Trilla Inc. 2017
  * 
  * @author raghosh
  */
 
 @Entity
-@Table(name="trl_warehouse_locators"
+@Table(name="trl_warehouse_lpns"
       , uniqueConstraints=@UniqueConstraint(columnNames={"tenant_id", "warehouse_code"})
 )
 @NamedQueries({
+   @NamedQuery(name="LPNumberEntity.findByLpnCode", query="SELECT t from LPNumberEntity t WHERE t.warehouseRef.warehouseCode = :whCode and t.lpnCode = :lpnCode")
 })
 @Cacheable(true)
 @Indexed(index="UnitTest")
-@FullTextFilterDef(name="filter-dept-by-tenant", impl=TenantBasedSearchFilterFactory.class)
+@FullTextFilterDef(name="filter-lpns-by-tenant", impl=TenantBasedSearchFilterFactory.class)
 @MultiTenant(level = MultiTenant.Levels.ONE_TENANT)
-public class WarehouseLocatorEntity {
+public class LPNumberEntity {
 
   private static final long serialVersionUID = -1L;
   
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name="locator_id", nullable=false)
+  @Column(name="lpn_id", nullable=false)
   @DocumentId
   private Long id;
 
@@ -61,32 +68,25 @@ public class WarehouseLocatorEntity {
   @Column(name="tenant_id", nullable=false)
   @Field(analyze=Analyze.NO, store = Store.YES)
   private Long tenantId;
-
+  
+  @Column(name="lpn_code", nullable=false)
+  @Fields({
+      @Field,
+      @Field(name="lpn-code", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
+  })
+  private String lpnCode;
+  
+  @Column(name="supplier_lpn", nullable=false)
+  @Fields({
+      @Field,
+      @Field(name="supplier-lpn", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
+  })
+  private String supplierLpn;
+  
   @ManyToOne
-  @JoinColumn(name="zone_ref")
+  @JoinColumn(name="warehouse_ref")
   @ContainedIn
-  private WarehouseZoneEntity zoneRef;
-  
-  @Column(name="row_value", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="row-value", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
-  private String rowValue;
-  
-  @Column(name="rack_value", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="rack-value", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
-  private String rackValue;
-  
-  @Column(name="bin_value", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="bin-value", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
-  private String binValue;
+  private WarehouseEntity warehouseRef;
   
   @Column(name="enabled_flag", nullable=false)
   @Fields({
@@ -98,6 +98,10 @@ public class WarehouseLocatorEntity {
   @Embedded
   @IndexedEmbedded
   private RevisionControlBean revisionControl;
+  
+  @OneToMany(mappedBy="lpnRef", cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+  @IndexedEmbedded(includeEmbeddedObjectId=true, depth=1)
+  private List<LPNPartEntity> lpnParts;
 
   public Long getId() {
     return id;
@@ -115,103 +119,72 @@ public class WarehouseLocatorEntity {
     this.tenantId = tenantId;
   }
 
-  /**
-   * @return the zoneRef
-   */
-  public WarehouseZoneEntity getZoneRef() {
-    return zoneRef;
+  public String getLpnCode() {
+    return lpnCode;
   }
 
-  /**
-   * @param zoneRef the zoneRef to set
-   */
-  public void setZoneRef(WarehouseZoneEntity zoneRef) {
-    this.zoneRef = zoneRef;
+  public void setLpnCode(String lpnCode) {
+    this.lpnCode = lpnCode;
   }
 
-  /**
-   * @return the rowValue
-   */
-  public String getRowValue() {
-    return rowValue;
+  public String getSupplierLpn() {
+    return supplierLpn;
   }
 
-  /**
-   * @param rowValue the rowValue to set
-   */
-  public void setRowValue(String rowValue) {
-    this.rowValue = rowValue;
+  public void setSupplierLpn(String supplierLpn) {
+    this.supplierLpn = supplierLpn;
   }
 
-  /**
-   * @return the rackValue
-   */
-  public String getRackValue() {
-    return rackValue;
+  public WarehouseEntity getWarehouseRef() {
+    return warehouseRef;
   }
 
-  /**
-   * @param rackValue the rackValue to set
-   */
-  public void setRackValue(String rackValue) {
-    this.rackValue = rackValue;
+  public void setWarehouseRef(WarehouseEntity warehouseRef) {
+    this.warehouseRef = warehouseRef;
   }
 
-  /**
-   * @return the binValue
-   */
-  public String getBinValue() {
-    return binValue;
-  }
-
-  /**
-   * @param binValue the binValue to set
-   */
-  public void setBinValue(String binValue) {
-    this.binValue = binValue;
-  }
-
-  /**
-   * @return the isEnabled
-   */
   public Boolean getIsEnabled() {
     return isEnabled;
   }
 
-  /**
-   * @param isEnabled the isEnabled to set
-   */
   public void setIsEnabled(Boolean isEnabled) {
     this.isEnabled = isEnabled;
   }
 
-  /**
-   * @return the revisionControl
-   */
   public RevisionControlBean getRevisionControl() {
     return revisionControl;
   }
 
-  /**
-   * @param revisionControl the revisionControl to set
-   */
   public void setRevisionControl(RevisionControlBean revisionControl) {
     this.revisionControl = revisionControl;
   }
 
-  public WarehouseLocator convertTo() {
+  public List<LPNPartEntity> getLpnParts() {
+    return lpnParts;
+  }
+
+  public void setLpnParts(List<LPNPartEntity> lpnParts) {
+    this.lpnParts = lpnParts;
+  }
+
+  public LPNumber convertTo() {
     
-    WarehouseLocator bean = new WarehouseLocator();
+    LPNumber bean = new LPNumber();
     
     bean.setId(this.id);
     bean.setTenantId(this.tenantId);
     bean.setIsEnabled(this.isEnabled);
-    bean.setBinValue(this.binValue);
-    bean.setRackValue(this.rackValue);
-    bean.setRowValue(this.rowValue);
-    bean.setRevisionControl(this.revisionControl);
-    bean.setZoneCode(this.zoneRef.getZoneCode());
+    bean.setLpnCode(this.lpnCode);
+    List<String> lpnPartList = new ArrayList<>();
+    for(LPNPartEntity lpnPart : lpnParts) {
+      lpnPartList.add(lpnPart.getLpnRef().getLpnCode());
+    }
+    bean.setLpnParts(lpnPartList);
+    bean.setRevisionControl(revisionControl);
+    bean.setSupplierLpn(supplierLpn);
+    bean.setWarehouseCode(warehouseRef.getWarehouseCode());
     
     return(bean);
   }
+
 }
