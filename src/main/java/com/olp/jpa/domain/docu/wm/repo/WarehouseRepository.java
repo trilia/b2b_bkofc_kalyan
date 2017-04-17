@@ -7,7 +7,7 @@ package com.olp.jpa.domain.docu.wm.repo;
 
 import com.olp.jpa.common.ITextRepository;
 import com.olp.jpa.domain.docu.ut.model.DepartmentBean;
-import com.olp.jpa.domain.docu.wm.repo.model.WarehouseEntity;
+import com.olp.jpa.domain.docu.wm.model.WarehouseEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;

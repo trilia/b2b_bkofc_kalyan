@@ -6,7 +6,7 @@
 package com.olp.jpa.domain.docu.wm.repo;
 
 import com.olp.jpa.common.ITextRepository;
-import com.olp.jpa.domain.docu.wm.repo.model.WarehouseLocatorEntity;
+import com.olp.jpa.domain.docu.wm.model.WarehouseLocatorEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;

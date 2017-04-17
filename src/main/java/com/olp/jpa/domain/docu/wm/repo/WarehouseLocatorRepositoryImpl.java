@@ -8,8 +8,8 @@ package com.olp.jpa.domain.docu.wm.repo;
 import com.olp.fwk.common.ContextManager;
 import com.olp.fwk.common.IContext;
 import com.olp.jpa.common.AbstractRepositoryImpl;
+import com.olp.jpa.domain.docu.wm.model.WarehouseLocatorEntity;
 import com.olp.jpa.domain.docu.wm.repo.WarehouseLocatorRepository;
-import com.olp.jpa.domain.docu.wm.repo.model.WarehouseLocatorEntity;
 
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author raghosh
  */
-@Repository("deptRepository")
+@Repository("warehouseLocatorRepository")
 public class WarehouseLocatorRepositoryImpl extends AbstractRepositoryImpl<WarehouseLocatorEntity, Long> implements WarehouseLocatorRepository {
     
     //@Override
