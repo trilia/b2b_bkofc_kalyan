@@ -18,6 +18,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface LPNumberRepository extends JpaRepository<LPNumberEntity, Long>, ITextRepository<LPNumberEntity, Long> {
     
-    public LPNumberEntity findByLpnCode(String warehouseCode, String lpnCode);
+    public LPNumberEntity findByLpNumber(String warehouseCode, String lpNumber);
     
 }

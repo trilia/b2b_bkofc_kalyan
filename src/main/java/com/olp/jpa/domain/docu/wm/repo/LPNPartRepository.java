@@ -17,5 +17,7 @@ import org.springframework.data.repository.NoRepositoryBean;
  */
 @NoRepositoryBean
 public interface LPNPartRepository extends JpaRepository<LPNPartEntity, Long>, ITextRepository<LPNPartEntity, Long> {
-    
+ 
+  public LPNPartEntity findByLpnCode(String lpnCode);
+
 }
