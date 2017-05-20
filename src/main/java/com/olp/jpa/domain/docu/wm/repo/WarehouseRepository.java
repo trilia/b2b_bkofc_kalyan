@@ -19,6 +19,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface WarehouseRepository extends JpaRepository<WarehouseEntity, Long>, ITextRepository<WarehouseEntity, Long> {
     
-    public WarehouseEntity findByWarehouseCode(String warehouseCode, String tenant);
+    public WarehouseEntity findByWarehouseCode(String warehouseCode);
     
 }

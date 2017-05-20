@@ -28,9 +28,12 @@ import org.hibernate.search.annotations.Store;
 
 import com.olp.annotations.KeyAttribute;
 import com.olp.annotations.MultiTenant;
+import com.olp.fwk.common.Constants;
 import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.TenantBasedSearchFilterFactory;
 import com.olp.jpa.domain.docu.inv.model.ProductSkuEntity;
+import java.io.Serializable;
+import javax.persistence.Temporal;
 
 /*
  * Trilla Inc Confidential
@@ -51,7 +54,7 @@ import com.olp.jpa.domain.docu.inv.model.ProductSkuEntity;
 @FullTextFilterDef(name="filter-lpn-by-tenant", impl=TenantBasedSearchFilterFactory.class)
 @MultiTenant(level = MultiTenant.Levels.ONE_TENANT)
 
-public class LPNPartEntity {
+public class LPNPartEntity implements Serializable {
   
   private static final long serialVersionUID = -1L;
   
@@ -66,12 +69,16 @@ public class LPNPartEntity {
   @Field(analyze=Analyze.NO, store = Store.YES)
   private Long tenantId;
 
-  @Column(name="product_sku_ref", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="product-sku-code", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
-  })
+  @ManyToOne
+  @JoinColumn(name="product_sku_ref")
+  @ContainedIn
   private ProductSkuEntity productSkuRef;
+  
+  @Column(name="product_sku_ref_id", nullable=false)
+  @Fields({
+      @Field(index=Index.YES, analyze=Analyze.NO, store=Store.NO)
+  })
+  private Long productSkuRefId;
   
   @Column(name="quantity", nullable=false)
   @Fields({
@@ -99,6 +106,7 @@ public class LPNPartEntity {
       @Field,
       @Field(name="validity-date", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
   })
+  @Temporal(javax.persistence.TemporalType.DATE)
   private Date validityDate;
   
   @Column(name="serial_number", nullable=false)
@@ -120,11 +128,9 @@ public class LPNPartEntity {
   @ContainedIn
   private LPNumberEntity lpnRef;
   
-  @Column(name="child_lpn_code", nullable=false)
-  @Fields({
-      @Field,
-      @Field(name="child-lpn-code")
-  })
+  @ManyToOne
+  @JoinColumn(name="child_lpn_ref")
+  @ContainedIn
   private LPNumberEntity childLpnRef;
 
   @Embedded
@@ -154,6 +160,14 @@ public class LPNPartEntity {
   public void setProductSkuRef(ProductSkuEntity productSkuRef) {
     this.productSkuRef = productSkuRef;
   }
+
+    public Long getProductSkuRefId() {
+        return productSkuRefId;
+    }
+
+    public void setProductSkuRefId(Long productSkuRefId) {
+        this.productSkuRefId = productSkuRefId;
+    }
 
   public Integer getQuantity() {
     return quantity;
@@ -233,9 +247,12 @@ public class LPNPartEntity {
     this.revisionControl = revisionControl;
   }
 
-  public LPNPart convertTo() {
+  public LPNPart convertTo(int mode) {
     
     LPNPart bean = new LPNPart();
+    
+    if (mode <= Constants.CONV_COMPLETE_DEFINITION)
+        bean.setId(this.id);
     
     bean.setId(this.id);
     bean.setTenantId(this.tenantId);
@@ -248,6 +265,9 @@ public class LPNPartEntity {
     bean.setSupplierRef(supplierRef);
     bean.setUom(uom);
     bean.setValidityDate(validityDate);
+    
+    if (mode <= Constants.CONV_WITH_REVISION_INFO)
+        bean.setRevisionControl(this.revisionControl);
     
     
     return(bean);

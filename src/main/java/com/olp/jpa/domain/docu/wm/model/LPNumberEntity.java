@@ -32,8 +32,10 @@ import org.hibernate.search.annotations.Store;
 
 import com.olp.annotations.KeyAttribute;
 import com.olp.annotations.MultiTenant;
+import com.olp.fwk.common.Constants;
 import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.TenantBasedSearchFilterFactory;
+import java.io.Serializable;
 
 /*
  * Trilla Inc Confidential
@@ -45,7 +47,7 @@ import com.olp.jpa.common.TenantBasedSearchFilterFactory;
 
 @Entity
 @Table(name="trl_warehouse_lpns"
-      , uniqueConstraints=@UniqueConstraint(columnNames={"tenant_id", "warehouse_code"})
+      , uniqueConstraints=@UniqueConstraint(columnNames={"tenant_id", "warehouse_code", "lpn_code"})
 )
 @NamedQueries({
    @NamedQuery(name="LPNumberEntity.findByLpnCode", query="SELECT t from LPNumberEntity t WHERE t.warehouseRef.warehouseCode = :whCode and t.lpnCode = :lpnCode")
@@ -54,7 +56,7 @@ import com.olp.jpa.common.TenantBasedSearchFilterFactory;
 @Indexed(index="UnitTest")
 @FullTextFilterDef(name="filter-lpns-by-tenant", impl=TenantBasedSearchFilterFactory.class)
 @MultiTenant(level = MultiTenant.Levels.ONE_TENANT)
-public class LPNumberEntity {
+public class LPNumberEntity implements Serializable {
 
   private static final long serialVersionUID = -1L;
   
@@ -69,6 +71,7 @@ public class LPNumberEntity {
   @Field(analyze=Analyze.NO, store = Store.YES)
   private Long tenantId;
   
+  @KeyAttribute
   @Column(name="lpn_code", nullable=false)
   @Fields({
       @Field,
@@ -88,6 +91,14 @@ public class LPNumberEntity {
   @ContainedIn
   private WarehouseEntity warehouseRef;
   
+  @KeyAttribute
+  @Column(name="warehouse_code", nullable=false)
+  @Fields({
+      @Field,
+      @Field(name="warehouse-code", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
+  })
+  private String warehouseCode;
+  
   @Column(name="enabled_flag", nullable=false)
   @Fields({
       @Field,
@@ -95,13 +106,20 @@ public class LPNumberEntity {
   })
   private Boolean isEnabled;
   
+  @Column(name="status", nullable=false)
+  @Fields({
+      @Field,
+      @Field(name="status", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
+  })
+  private String status; // indicates lifecycle status
+  
   @Embedded
   @IndexedEmbedded
   private RevisionControlBean revisionControl;
   
-  @OneToMany(mappedBy="lpnRef", cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+  @OneToMany(mappedBy="lpnRef", cascade={CascadeType.ALL})
   @IndexedEmbedded(includeEmbeddedObjectId=true, depth=1)
-  private List<LPNPartEntity> lpnParts;
+  private List<LPNPartEntity> lpnParts = new ArrayList<>();
 
   public Long getId() {
     return id;
@@ -143,6 +161,14 @@ public class LPNumberEntity {
     this.warehouseRef = warehouseRef;
   }
 
+    public String getWarehouseCode() {
+        return warehouseCode;
+    }
+
+    public void setWarehouseCode(String warehouseCode) {
+        this.warehouseCode = warehouseCode;
+    }
+
   public Boolean getIsEnabled() {
     return isEnabled;
   }
@@ -150,6 +176,14 @@ public class LPNumberEntity {
   public void setIsEnabled(Boolean isEnabled) {
     this.isEnabled = isEnabled;
   }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
   public RevisionControlBean getRevisionControl() {
     return revisionControl;
@@ -164,25 +198,35 @@ public class LPNumberEntity {
   }
 
   public void setLpnParts(List<LPNPartEntity> lpnParts) {
-    this.lpnParts = lpnParts;
+      if (lpnParts != null)
+        this.lpnParts = lpnParts;
+      else
+        this.lpnParts.clear();
   }
 
-  public LPNumber convertTo() {
+  public LPNumber convertTo(int mode) {
     
     LPNumber bean = new LPNumber();
     
-    bean.setId(this.id);
+    if (mode <= Constants.CONV_COMPLETE_DEFINITION)
+        bean.setId(this.id);
+    
     bean.setTenantId(this.tenantId);
+    bean.setPartitionCode("dfsdfs");
     bean.setIsEnabled(this.isEnabled);
+    bean.setStatus(this.status);
     bean.setLpnCode(this.lpnCode);
-    List<String> lpnPartList = new ArrayList<>();
-    for(LPNPartEntity lpnPart : lpnParts) {
-      lpnPartList.add(lpnPart.getLpnRef().getLpnCode());
+    List<LPNPart> lpnPartList = new ArrayList<>();
+    for(LPNPartEntity lpnPartE : lpnParts) {
+        LPNPart part = lpnPartE.convertTo(mode);
+        lpnPartList.add(part);
     }
     bean.setLpnParts(lpnPartList);
-    bean.setRevisionControl(revisionControl);
     bean.setSupplierLpn(supplierLpn);
     bean.setWarehouseCode(warehouseRef.getWarehouseCode());
+    
+    if (mode <= Constants.CONV_WITH_REVISION_INFO)
+        bean.setRevisionControl(this.revisionControl);
     
     return(bean);
   }

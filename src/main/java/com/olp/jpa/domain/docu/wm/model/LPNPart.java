@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.domain.docu.inv.model.ProductSkuEntity;
+import com.olp.jpa.domain.docu.inv.model.SkuBean;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /*
  * Trilla Inc Confidential
@@ -21,7 +23,7 @@ import com.olp.jpa.domain.docu.inv.model.ProductSkuEntity;
 
 @XmlRootElement(name="lpn-part", namespace="http://trilia-cloud.com/schema/entity/wm")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={ "id", "tenantId", "productSkuCode", "quantity", "uom", "batchNumber", "validityDate", "serialNumber", "supplierRef", "lpnCode", "childLpnCode", "revisionControl" })
+@XmlType(propOrder={ "id", "tenantId", "partitionCode", "productSkuCode", "quantity", "uom", "batchNumber", "validityDate", "serialNumber", "supplierRef", "lpnCode", "childLpnCode", "revisionControl" })
 public class LPNPart {
 
   @XmlElement(name="lpn-part-id")
@@ -29,6 +31,9 @@ public class LPNPart {
   
   @XmlElement(name="tenant-id")
   private Long tenantId;
+  
+  @XmlAttribute(name="partition-code")
+  private String partitionCode;
   
   @XmlElement(name="product-sku-code")
   private String productSkuCode;
@@ -74,6 +79,14 @@ public class LPNPart {
   public void setTenantId(Long tenantId) {
     this.tenantId = tenantId;
   }
+
+    public String getPartitionCode() {
+        return partitionCode;
+    }
+
+    public void setPartitionCode(String partitionCode) {
+        this.partitionCode = partitionCode;
+    }
 
   public String getProductSkuCode() {
     return productSkuCode;
@@ -155,7 +168,7 @@ public class LPNPart {
     this.revisionControl = revisionControl;
   }
 
-  public LPNPartEntity convertTo() {
+  public LPNPartEntity convertTo(int mode) {
     
     LPNPartEntity bean = new LPNPartEntity();
     
@@ -172,7 +185,8 @@ public class LPNPart {
     bean.setLpnRef(lpn);
     
     ProductSkuEntity sku = new ProductSkuEntity();
-    sku.setSource(this.productSkuCode);
+    SkuBean skuBean = SkuBean.parse(this.productSkuCode);
+    sku.setSku(skuBean);
     bean.setProductSkuRef(sku);
     
     bean.setQuantity(quantity);
@@ -180,6 +194,8 @@ public class LPNPart {
     bean.setSupplierRef(supplierRef);
     bean.setUom(uom);
     bean.setValidityDate(validityDate);
+    
+    bean.setRevisionControl(this.revisionControl);
     
     return(bean);
   }

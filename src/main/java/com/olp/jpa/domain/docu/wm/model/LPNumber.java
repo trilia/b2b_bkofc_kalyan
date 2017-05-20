@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.olp.jpa.common.RevisionControlBean;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /*
  * Trilla Inc Confidential
@@ -21,7 +22,7 @@ import com.olp.jpa.common.RevisionControlBean;
 
 @XmlRootElement(name="lpn-number", namespace="http://trilia-cloud.com/schema/entity/wm")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={ "id", "tenantId", "lpnCode", "supplierLpn", "warehouseRef", "warehouseCode", "isEnabled", "revisionControl", "lpnParts" })
+@XmlType(propOrder={ "id", "tenantId", "partitionCode", "lpnCode", "supplierLpn", "warehouseRef", "warehouseCode", "isEnabled", "status", "revisionControl", "lpnParts" })
 public class LPNumber {
 
   @XmlElement(name="lpn-id")
@@ -29,6 +30,9 @@ public class LPNumber {
   
   @XmlElement(name="tenant-id")
   private Long tenantId;
+  
+  @XmlAttribute(name="partition-code")
+  private String partitionCode;
   
   @XmlElement(name="lpn-code")
   private String lpnCode;
@@ -42,10 +46,13 @@ public class LPNumber {
   @XmlElement(name="enabled-flag")
   private Boolean isEnabled;
   
+  @XmlElement(name="status")
+  private String status;
+  
   private RevisionControlBean revisionControl;
   
   @XmlElement(name="lpn-part")
-  private List<String> lpnParts;
+  private List<LPNPart> lpnParts;
 
   public Long getId() {
     return id;
@@ -62,6 +69,14 @@ public class LPNumber {
   public void setTenantId(Long tenantId) {
     this.tenantId = tenantId;
   }
+
+    public String getPartitionCode() {
+        return partitionCode;
+    }
+
+    public void setPartitionCode(String partitionCode) {
+        this.partitionCode = partitionCode;
+    }
 
   public String getLpnCode() {
     return lpnCode;
@@ -95,6 +110,14 @@ public class LPNumber {
     this.isEnabled = isEnabled;
   }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
   public RevisionControlBean getRevisionControl() {
     return revisionControl;
   }
@@ -103,28 +126,26 @@ public class LPNumber {
     this.revisionControl = revisionControl;
   }
 
-  public List<String> getLpnParts() {
-    return lpnParts;
-  }
+    public List<LPNPart> getLpnParts() {
+        return lpnParts;
+    }
 
-  public void setLpnParts(List<String> lpnParts) {
-    this.lpnParts = lpnParts;
-  }
-  
-  public LPNumberEntity convertTo() {
+    public void setLpnParts(List<LPNPart> lpnParts) {
+        this.lpnParts = lpnParts;
+    }
+
+  public LPNumberEntity convertTo(int mode) {
     
     LPNumberEntity bean = new LPNumberEntity();
     
     bean.setId(this.id);
     bean.setTenantId(this.tenantId);
     bean.setIsEnabled(this.isEnabled);
+    bean.setStatus(this.status);
     bean.setLpnCode(this.lpnCode);
     List<LPNPartEntity> lpnPartEntityList = new ArrayList<>();
-    for(String lpnPart : lpnParts) {
-      LPNPartEntity lpnPartEntity = new LPNPartEntity();
-      LPNumberEntity lpNumberEntity = new LPNumberEntity();
-      lpNumberEntity.setLpnCode(lpnPart);
-      lpnPartEntity.setLpnRef(lpNumberEntity);
+    for(LPNPart lpnPart : lpnParts) {
+      LPNPartEntity lpnPartEntity = lpnPart.convertTo(mode);
       lpnPartEntityList.add(lpnPartEntity);
     }
     bean.setLpnParts(lpnPartEntityList);

@@ -16,6 +16,7 @@ import com.olp.jpa.common.AbstractServiceImpl;
 import com.olp.jpa.common.ITextRepository;
 import com.olp.jpa.common.AbstractServiceImpl.Outcome;
 import com.olp.jpa.domain.docu.prod.repo.ProductRevisionService;
+import com.olp.jpa.domain.docu.wm.model.LPNPartEntity;
 import com.olp.jpa.domain.docu.wm.model.LPNumberEntity;
 import com.olp.jpa.domain.docu.wm.model.WarehouseEntity;
 import com.olp.jpa.domain.docu.wm.repo.LPNPartRepository;
@@ -41,36 +42,42 @@ public class LPNumberServiceImpl extends AbstractServiceImpl<LPNumberEntity, Lon
   @Qualifier("warehouseRepository")
   private WarehouseRepository warehouseRepo;
   
-  @Autowired
-  @Qualifier("prodRevisionService")
-  private ProductRevisionService revSvc;
-  
   @Override
   @Transactional(readOnly=true, noRollbackFor={javax.persistence.NoResultException.class})
   public void validate(LPNumberEntity entity) throws EntityValidationException {
 
-    // LPN
-    String lpnCode = entity.getLpnCode(), supplierLpn = entity.getSupplierLpn();
-    WarehouseEntity warehouseCode = entity.getWarehouseRef();
-    LPNumberEntity childLpn2 = null;
-
-    if (lpnCode == null) {
-        try {
-            childLpn2 = lpNumberRepo.findByLpNumber(entity.getWarehouseRef().getWarehouseCode(), lpnCode);
-        } catch (javax.persistence.NoResultException ex) {
-            throw new EntityValidationException("Could not find child LP Number with code - " + lpnCode);
+    if (entity.getLpnCode() == null || "".equals(entity.getLpnCode()))
+        throw new EntityValidationException("LPN code cannot be null !!");
+    
+    if (entity.getWarehouseRef() != null) {
+        WarehouseEntity wh = entity.getWarehouseRef(), wh2 = null;
+        if (wh.getId() == null) {
+            try {
+                wh2 = warehouseRepo.findByWarehouseCode(wh.getWarehouseCode());
+            } catch (javax.persistence.NoResultException ex) {
+                throw new EntityValidationException("Could not find warehouse with code - " + wh.getWarehouseCode());
+            }
+        } else {
+            try {
+                wh2 = warehouseRepo.findOne(wh.getId());
+            } catch (javax.persistence.NoResultException ex) {
+                throw new EntityValidationException("Could not find warehouse with id - " + wh.getId());
+            }
         }
-    } else {
-        try {
-            childLpn2 = lpNumberRepo.findOne(entity.getId());
-        } catch (javax.persistence.NoResultException ex) {
-            throw new EntityValidationException("Could not find child LP Number with id - " + entity.getId());
+        
+        if (wh2 == null)
+            throw new EntityValidationException("Could not determine warehouse using either id / code !!");
+        
+        entity.setWarehouseRef(wh2);
+        entity.setWarehouseCode(wh2.getWarehouseCode()); // ogm limitation. We cannot query using wh code without this.
+    }
+    
+    if (entity.getLpnParts() != null) {
+        for (LPNPartEntity part : entity.getLpnParts()) {
+            part.setLpnRef(entity); // relationships to be updated on both sides
         }
     }
-    if (childLpn2 ==  null)
-        throw new EntityValidationException("Could not find child LP Number with code or id !");
     
-    this.updateTenantWithRevision(entity);
   }
 
   @Override
@@ -137,12 +144,47 @@ public class LPNumberServiceImpl extends AbstractServiceImpl<LPNumberEntity, Lon
       return(result);
   }
   
+  @Override
+  protected LPNumberEntity doUpdate(LPNumberEntity neu, LPNumberEntity old) throws EntityValidationException {
+      
+      if (!old.getLpnCode().equals(neu.getLpnCode()))
+          throw new EntityValidationException("LPN Code cannot be updated ! Existing - " + old.getLpnCode() + " , new - " + neu.getLpnCode());
+      
+      if (!old.getWarehouseCode().equals(neu.getWarehouseCode())) {
+          // validate method will fire before this. Validate method checks for the validity of warehouse reference. 
+          // Only after validating it sets the warehouse code. So sufficient to check only the warehouse code and not the warehouse reference
+          throw new EntityValidationException("Warehouse cannot be updated ! Existing - " + old.getWarehouseCode() + ", new - " + neu.getWarehouseCode());
+      }
+      
+      if (!"NEW".equals(old.getStatus())) {
+          if ("NEW".equals(neu.getStatus()))
+              throw new EntityValidationException("Status cannot be changed to NEW at this stage ! Existing status - " + old.getStatus());
+      }
+      
+      old.setSupplierLpn(neu.getSupplierLpn());
+      old.setIsEnabled(neu.getIsEnabled());
+      old.setStatus(neu.getStatus());
+      old.setLpnParts(neu.getLpnParts());
+      if (old.getLpnParts() != null) {
+          for (LPNPartEntity part : old.getLpnParts()) {
+            part.setLpnRef(old); // relationships to be updated on both sides. In validate , neu entity instance is passed. Hence
+                                 // relationship with old to be updated
+        }
+      }
+      
+      this.updateRevisionControl(old);
+      
+      return(old);
+  }
+  
   private void preProcessAdd(LPNumberEntity entity) throws EntityValidationException {
     validate(entity);
+    this.updateTenantWithRevision(entity);
   }
 
   private void preProcessUpdate(LPNumberEntity entity) throws EntityValidationException {
         validate(entity);
+        this.updateRevisionControl(entity);
   }
   
 }

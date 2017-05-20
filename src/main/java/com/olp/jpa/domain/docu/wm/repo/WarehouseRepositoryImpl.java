@@ -22,16 +22,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository("warehouseRepository")
 public class WarehouseRepositoryImpl extends AbstractRepositoryImpl<WarehouseEntity, Long> implements WarehouseRepository {
     
-    //@Override
+    @Override
     @Transactional(readOnly=true)
-    public WarehouseEntity findByWarehouseCode(String warehouseCode, String tenant) {
+    public WarehouseEntity findByWarehouseCode(String warehouseCode) {
         
         IContext ctx = ContextManager.getContext();
         String tid = ctx.getTenantId();
         
         TypedQuery<WarehouseEntity> query = getEntityManager().createNamedQuery("WarehouseEntity.findByWarehouseCode", WarehouseEntity.class);
         query.setParameter("code", warehouseCode);
-        query.setParameter("tenant", tenant);
+        query.setParameter("tenant", ctx.getTenantId());
         
         WarehouseEntity bean = query.getSingleResult();
         
