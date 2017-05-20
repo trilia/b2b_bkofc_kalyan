@@ -14,11 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.olp.fwk.common.error.EntityValidationException;
 import com.olp.jpa.common.AbstractServiceImpl;
 import com.olp.jpa.common.ITextRepository;
-import com.olp.jpa.common.AbstractServiceImpl.Outcome;
-import com.olp.jpa.domain.docu.wm.model.LPNumberEntity;
 import com.olp.jpa.domain.docu.wm.model.WarehouseEntity;
-import com.olp.jpa.domain.docu.wm.model.WarehouseLocatorEntity;
-import com.olp.jpa.domain.docu.wm.repo.WarehouseLocatorRepository;
+import com.olp.jpa.domain.docu.wm.model.WarehouseZoneEntity;
 import com.olp.jpa.domain.docu.wm.repo.WarehouseRepository;
 
 /**
@@ -103,12 +100,44 @@ public class WarehouseServiceImpl extends AbstractServiceImpl<WarehouseEntity, L
     return(result);
   }
   
+  @Override
+  protected WarehouseEntity doUpdate(WarehouseEntity neu, WarehouseEntity old) throws EntityValidationException {
+      
+    if (!old.getWarehouseCode().equals(neu.getWarehouseCode())) {
+        throw new EntityValidationException("Warehouse cannot be updated ! Existing - " + old.getWarehouseCode() + ", new - " + neu.getWarehouseCode());
+    }
+    
+    if (!old.getWarehouseName().equals(neu.getWarehouseName())) {
+      throw new EntityValidationException("Warehouse name cannot be updated ! Existing - " + old.getWarehouseName() + ", new - " + neu.getWarehouseName());
+    }
+  
+    if (old.getOrganizationRef().getOrgCode() != null &&
+        !old.getOrganizationRef().getOrgCode().equals(neu.getOrganizationRef().getOrgCode())) {
+      throw new EntityValidationException("Warehouse organization code cannot be updated ! Existing - " + old.getOrganizationRef().getOrgCode() + ", new - " + neu.getOrganizationRef().getOrgCode());
+    }
+
+      old.setWmControlEnabled(neu.getWmControlEnabled());
+      
+      old.setZones(neu.getZones());
+      if (old.getZones() != null) {
+          for (WarehouseZoneEntity entity : old.getZones()) {
+            entity.setWarehouseRef(old);
+        }
+      }
+      
+      this.updateRevisionControl(old);
+      
+      return(old);
+  }
   
   private void preProcessAdd(WarehouseEntity entity) throws EntityValidationException {
     validate(entity);
+    this.updateTenantWithRevision(entity);
   }
 
   private void preProcessUpdate(WarehouseEntity entity) throws EntityValidationException {
         validate(entity);
+        this.updateRevisionControl(entity);
   }
+  
 }

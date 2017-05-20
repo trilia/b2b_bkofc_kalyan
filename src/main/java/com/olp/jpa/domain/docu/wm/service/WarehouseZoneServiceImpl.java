@@ -14,11 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.olp.fwk.common.error.EntityValidationException;
 import com.olp.jpa.common.AbstractServiceImpl;
 import com.olp.jpa.common.ITextRepository;
-import com.olp.jpa.common.AbstractServiceImpl.Outcome;
-import com.olp.jpa.domain.docu.wm.model.LPNumberEntity;
 import com.olp.jpa.domain.docu.wm.model.WarehouseLocatorEntity;
 import com.olp.jpa.domain.docu.wm.model.WarehouseZoneEntity;
-import com.olp.jpa.domain.docu.wm.repo.WarehouseLocatorRepository;
 import com.olp.jpa.domain.docu.wm.repo.WarehouseZoneRepository;
 
 /**
@@ -105,13 +102,59 @@ public class WarehouseZoneServiceImpl extends AbstractServiceImpl<WarehouseZoneE
     return(result);
   }
   
+  @Override
+  protected WarehouseZoneEntity doUpdate(WarehouseZoneEntity neu, WarehouseZoneEntity old) throws EntityValidationException {
+      
+      if (!old.getZoneCode().equals(neu.getZoneCode()))
+          throw new EntityValidationException("Warehouse Zonecode cannot be updated ! Existing - " + old.getZoneCode() + " , new - " + neu.getZoneCode());
+      
+      if (!old.getWarehouseCode().equals(neu.getWarehouseCode())) {
+          throw new EntityValidationException("Warehouse cannot be updated ! Existing - " + old.getWarehouseCode() + ", new - " + neu.getWarehouseCode());
+      }
+      
+      if (!old.getSubInventory().equals(neu.getSubInventory())) {
+        throw new EntityValidationException("Warehouse Sub/Inventory cannot be updated ! Existing - " + old.getSubInventory() + ", new - " + neu.getSubInventory());
+      }
+    
+      if (!old.getZoneSubType().equals(neu.getZoneSubType())) {
+        throw new EntityValidationException("Warehouse Zone subtype cannot be updated ! Existing - " + old.getZoneSubType() + ", new - " + neu.getZoneSubType());
+      }
+    
+      if (!old.getZoneName().equals(neu.getZoneName())) {
+        throw new EntityValidationException("Warehouse Zone name cannot be updated ! Existing - " + old.getZoneName() + ", new - " + neu.getZoneName());
+      }
+    
+      if (!old.getZoneName().equals(neu.getZoneName())) {
+        throw new EntityValidationException("Warehouse Zone name cannot be updated ! Existing - " + old.getZoneName() + ", new - " + neu.getZoneName());
+      }
+
+      if (old.getWarehouseRef().getWarehouseCode() != null &&
+          !old.getWarehouseRef().getWarehouseCode().equals(neu.getWarehouseRef().getWarehouseCode())) {
+        throw new EntityValidationException("Warehouse Ref Code cannot be updated ! Existing - " + old.getWarehouseRef().getWarehouseCode() + ", new - " + neu.getWarehouseRef().getWarehouseCode());
+      }
+
+      old.setAllowDynamicLocator(neu.getAllowDynamicLocator());
+      old.setIslocatorEnabled(neu.getIslocatorEnabled());
+      old.setLocators(neu.getLocators());
+      if (old.getLocators() != null) {
+          for (WarehouseLocatorEntity entity : old.getLocators()) {
+            entity.setZoneRef(old); // relationships to be updated on both sides. In validate , neu entity instance is passed. Hence
+                                 // relationship with old to be updated
+        }
+      }
+      
+      this.updateRevisionControl(old);
+      return(old);
+  }
   
   private void preProcessAdd(WarehouseZoneEntity entity) throws EntityValidationException {
     validate(entity);
+    this.updateTenantWithRevision(entity);
   }
 
   private void preProcessUpdate(WarehouseZoneEntity entity) throws EntityValidationException {
         validate(entity);
+        this.updateRevisionControl(entity);
   }
-
+  
 }
