@@ -114,7 +114,7 @@ public class Warehouse {
     this.zone = zone;
   }
 
-  public WarehouseEntity convertTo() {
+  public WarehouseEntity convertTo(int mode) {
     
     WarehouseEntity bean = new WarehouseEntity();
     

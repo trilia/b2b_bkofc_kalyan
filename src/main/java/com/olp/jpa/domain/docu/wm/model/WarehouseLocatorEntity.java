@@ -26,6 +26,7 @@ import org.hibernate.search.annotations.Store;
 
 import com.olp.annotations.KeyAttribute;
 import com.olp.annotations.MultiTenant;
+import com.olp.fwk.common.Constants;
 import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.TenantBasedSearchFilterFactory;
 
@@ -199,11 +200,13 @@ public class WarehouseLocatorEntity {
     this.revisionControl = revisionControl;
   }
 
-  public WarehouseLocator convertTo() {
+  public WarehouseLocator convertTo(int mode) {
     
     WarehouseLocator bean = new WarehouseLocator();
     
-    bean.setId(this.id);
+    if (mode <= Constants.CONV_COMPLETE_DEFINITION)
+      bean.setId(this.id);
+  
     bean.setTenantId(this.tenantId);
     bean.setIsEnabled(this.isEnabled);
     bean.setBinValue(this.binValue);
@@ -211,6 +214,9 @@ public class WarehouseLocatorEntity {
     bean.setRowValue(this.rowValue);
     bean.setRevisionControl(this.revisionControl);
     bean.setZoneCode(this.zoneRef.getZoneCode());
+    
+    if (mode <= Constants.CONV_WITH_REVISION_INFO)
+      bean.setRevisionControl(this.revisionControl);
     
     return(bean);
   }

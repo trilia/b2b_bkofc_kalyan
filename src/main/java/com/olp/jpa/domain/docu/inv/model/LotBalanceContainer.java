@@ -1,4 +1,4 @@
-package com.olp.jpa.domain.docu.wm.model;
+package com.olp.jpa.domain.docu.inv.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,25 +18,25 @@ import com.olp.jpa.common.EntityContainerTemplate;
  * 
  * @author raghosh
  */
-@XmlRootElement(name="lpn-parts", namespace="http://trilia-cloud.com/schema/entity/wm")
+@XmlRootElement(name="lot-balance", namespace="http://trilia-cloud.com/schema/entity/wm")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"lpnPartList"})
-public class LPNPartContainer implements EntityContainerTemplate<LPNPart, Long> {
+@XmlType(propOrder={"lotBalanceList"})
+public class LotBalanceContainer implements EntityContainerTemplate<LotBalance, Long> {
   
-  @XmlElement( name = "lpn-part" )
-  private List<LPNPart> lpnPartList = new ArrayList<>();
+  @XmlElement( name = "lot-balance" )
+  private List<LotBalance> lotBalanceList = new ArrayList<>();
   
   @Override
-  public List<LPNPart> getEntityList() {
-      return(lpnPartList);
+  public List<LotBalance> getEntityList() {
+      return(lotBalanceList);
   }
   
-  public void setEntityList(List<LPNPart> list) {
+  public void setEntityList(List<LotBalance> list) {
     if(list != null) {
-      this.lpnPartList = list;
+      this.lotBalanceList = list;
     }
     else {
-      this.lpnPartList.clear();
+      this.lotBalanceList.clear();
     }
     
   }

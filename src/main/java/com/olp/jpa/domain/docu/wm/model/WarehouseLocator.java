@@ -1,13 +1,10 @@
 package com.olp.jpa.domain.docu.wm.model;
 
-import javax.persistence.Embedded;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.hibernate.search.annotations.IndexedEmbedded;
 
 import com.olp.jpa.common.RevisionControlBean;
 
@@ -157,7 +154,7 @@ public class WarehouseLocator {
     this.revisionControl = revisionControl;
   }
   
-  public WarehouseLocatorEntity convertTo() {
+  public WarehouseLocatorEntity convertTo(int mode) {
     
     WarehouseLocatorEntity bean = new WarehouseLocatorEntity();
     

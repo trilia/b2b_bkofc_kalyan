@@ -33,6 +33,7 @@ import org.hibernate.search.annotations.Store;
 
 import com.olp.annotations.KeyAttribute;
 import com.olp.annotations.MultiTenant;
+import com.olp.fwk.common.Constants;
 import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.TenantBasedSearchFilterFactory;
 
@@ -306,11 +307,13 @@ public class WarehouseZoneEntity {
     this.locators = locators;
   }
 
-  public WarehouseZone convertTo() {
+  public WarehouseZone convertTo(int mode) {
     
     WarehouseZone bean = new WarehouseZone();
     
-    bean.setId(this.id);
+    if (mode <= Constants.CONV_COMPLETE_DEFINITION)
+      bean.setId(this.id);
+  
     bean.setTenantId(this.tenantId);
     bean.setAllowDynamicLocator(this.allowDynamicLocator);
     bean.setIslocatorEnabled(this.islocatorEnabled);
@@ -329,6 +332,9 @@ public class WarehouseZoneEntity {
     }
     bean.setLocators(locatorList);
 
+    if (mode <= Constants.CONV_WITH_REVISION_INFO)
+      bean.setRevisionControl(this.revisionControl);
+  
     return(bean);
   }
 

@@ -18,25 +18,25 @@ import com.olp.jpa.common.EntityContainerTemplate;
  * 
  * @author raghosh
  */
-@XmlRootElement(name="lpn-parts", namespace="http://trilia-cloud.com/schema/entity/wm")
+@XmlRootElement(name="inward-shipment", namespace="http://trilia-cloud.com/schema/entity/wm")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"lpnPartList"})
-public class LPNPartContainer implements EntityContainerTemplate<LPNPart, Long> {
+@XmlType(propOrder={"inwardShipmentList"})
+public class InwardShipmentContainer implements EntityContainerTemplate<InwardShipment, Long> {
   
-  @XmlElement( name = "lpn-part" )
-  private List<LPNPart> lpnPartList = new ArrayList<>();
+  @XmlElement( name = "inward-shipment" )
+  private List<InwardShipment> inwardShipmentList = new ArrayList<>();
   
   @Override
-  public List<LPNPart> getEntityList() {
-      return(lpnPartList);
+  public List<InwardShipment> getEntityList() {
+      return(inwardShipmentList);
   }
   
-  public void setEntityList(List<LPNPart> list) {
+  public void setEntityList(List<InwardShipment> list) {
     if(list != null) {
-      this.lpnPartList = list;
+      this.inwardShipmentList = list;
     }
     else {
-      this.lpnPartList.clear();
+      this.inwardShipmentList.clear();
     }
     
   }

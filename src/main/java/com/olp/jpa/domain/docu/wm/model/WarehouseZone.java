@@ -244,7 +244,7 @@ public class WarehouseZone {
     this.locators = locators;
   }
 
-  public WarehouseZoneEntity convertTo() {
+  public WarehouseZoneEntity convertTo(int mode) {
     
     WarehouseZoneEntity bean = new WarehouseZoneEntity();
     

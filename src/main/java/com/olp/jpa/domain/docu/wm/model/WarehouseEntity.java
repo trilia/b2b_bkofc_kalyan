@@ -29,6 +29,7 @@ import org.hibernate.search.annotations.Store;
 
 import com.olp.annotations.KeyAttribute;
 import com.olp.annotations.MultiTenant;
+import com.olp.fwk.common.Constants;
 import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.TenantBasedSearchFilterFactory;
 import com.olp.jpa.domain.docu.org.model.OrganizationEntity;
@@ -162,11 +163,13 @@ public class WarehouseEntity {
     this.zones = zones;
   }
 
-  public Warehouse convertTo() {
+  public Warehouse convertTo(int mode) {
     
     Warehouse bean = new Warehouse();
     
-    bean.setId(this.id);
+    if (mode <= Constants.CONV_COMPLETE_DEFINITION)
+      bean.setId(this.id);
+  
     bean.setTenantId(this.tenantId);
     bean.setOrganizationCode(organizationRef.getOrgCode());
     bean.setWarehouseCode(warehouseCode);
@@ -179,6 +182,9 @@ public class WarehouseEntity {
       zoneCodes.add(zone.getZoneCode());
     }
     bean.setZone(zoneCodes);
+    
+    if (mode <= Constants.CONV_WITH_REVISION_INFO)
+      bean.setRevisionControl(this.revisionControl);
     
     return(bean);
   }
