@@ -36,6 +36,7 @@ import com.olp.annotations.MultiTenant;
 import com.olp.fwk.common.Constants;
 import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.TenantBasedSearchFilterFactory;
+import java.io.Serializable;
 
 /*
  * Trilla Inc Confidential
@@ -50,13 +51,14 @@ import com.olp.jpa.common.TenantBasedSearchFilterFactory;
       , uniqueConstraints=@UniqueConstraint(columnNames={"tenant_id", "warehouse_code"})
 )
 @NamedQueries({
-   @NamedQuery(name="WarehouseZoneEntity.findByLocatorCode", query="SELECT t from WarehouseZoneEntity t WHERE t.warehouseCode = :code and t.zoneCode = :locCode")
+   @NamedQuery(name="WarehouseZoneEntity.findByZoneCode", query="SELECT t from WarehouseZoneEntity t WHERE t.zoneCode = :zoneCode and t.tenantId = :tenant "),
+    @NamedQuery(name="WarehouseZoneEntity.findByWhCode", query="SELECT t from WarehouseZoneEntity t WHERE t.warehouseCode = :whCode and t.tenantId = :tenant ")
 })
 @Cacheable(true)
 @Indexed(index="UnitTest")
-@FullTextFilterDef(name="filter-dept-by-tenant", impl=TenantBasedSearchFilterFactory.class)
+@FullTextFilterDef(name="filter-wh-zone-by-tenant", impl=TenantBasedSearchFilterFactory.class)
 @MultiTenant(level = MultiTenant.Levels.ONE_TENANT)
-public class WarehouseZoneEntity {
+public class WarehouseZoneEntity implements Serializable {
 
   private static final long serialVersionUID = -1L;
   
@@ -90,7 +92,8 @@ public class WarehouseZoneEntity {
       @Field,
       @Field(name="zone-type", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
   })
-  private Enumeration<ZoneType>  zoneType;
+  @javax.persistence.Enumerated(javax.persistence.EnumType.STRING)
+  private ZoneType  zoneType;
   
   @Column(name="zone_sub_type", nullable=false)
   @Fields({
@@ -181,19 +184,13 @@ public class WarehouseZoneEntity {
     this.zoneName = zoneName;
   }
 
-  /**
-   * @return the zoneType
-   */
-  public Enumeration<ZoneType> getZoneType() {
-    return zoneType;
-  }
+    public ZoneType getZoneType() {
+        return zoneType;
+    }
 
-  /**
-   * @param zoneType the zoneType to set
-   */
-  public void setZoneType(Enumeration<ZoneType> zoneType) {
-    this.zoneType = zoneType;
-  }
+    public void setZoneType(ZoneType zoneType) {
+        this.zoneType = zoneType;
+    }
 
   /**
    * @return the zoneSubType

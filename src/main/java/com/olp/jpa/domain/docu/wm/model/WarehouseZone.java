@@ -10,9 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.hibernate.hql.ast.origin.hql.parse.HQLParser.additiveExpression_return;
-
 import com.olp.jpa.common.RevisionControlBean;
+import java.io.Serializable;
 
 /*
  * My Inc Confidential
@@ -23,7 +22,7 @@ import com.olp.jpa.common.RevisionControlBean;
 @XmlRootElement(name="warehouse-zone", namespace="http://trilia-cloud.com/schema/entity/wm")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder={ "id", "tenantId", "zoneCode", "zoneName", "zoneType", "zoneSubType", "subInventory", "islocatorEnabled", "allowDynamicLocator", "warehouseRef", "warehouseCode", "revisionControl", "locators" })
-public class WarehouseZone {
+public class WarehouseZone implements Serializable {
 
   @XmlElement(name="zone-id")
   private Long id;
@@ -38,7 +37,7 @@ public class WarehouseZone {
   private String zoneName;
   
   @XmlElement(name="zone-type")
-  private Enumeration<ZoneType> zoneType;
+  private ZoneType zoneType;
   
   @XmlElement(name="zone-sub-type")
   private String zoneSubType;
@@ -118,19 +117,13 @@ public class WarehouseZone {
     this.zoneName = zoneName;
   }
 
-  /**
-   * @return the zoneType
-   */
-  public Enumeration<ZoneType> getZoneType() {
-    return zoneType;
-  }
+    public ZoneType getZoneType() {
+        return zoneType;
+    }
 
-  /**
-   * @param zoneType the zoneType to set
-   */
-  public void setZoneType(Enumeration<ZoneType> zoneType) {
-    this.zoneType = zoneType;
-  }
+    public void setZoneType(ZoneType zoneType) {
+        this.zoneType = zoneType;
+    }
 
   /**
    * @return the zoneSubType

@@ -7,6 +7,7 @@ package com.olp.jpa.domain.docu.wm.repo;
 
 import com.olp.jpa.common.ITextRepository;
 import com.olp.jpa.domain.docu.wm.model.WarehouseZoneEntity;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -18,6 +19,8 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface WarehouseZoneRepository extends JpaRepository<WarehouseZoneEntity, Long>, ITextRepository<WarehouseZoneEntity, Long> {
     
-    public WarehouseZoneEntity findByZoneCode(String warehouseCode, String locCode);
+    public WarehouseZoneEntity findByZoneCode(String zoneCode);
+    
+    public List<WarehouseZoneEntity> findByWhCode(String whCode);
     
 }

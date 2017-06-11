@@ -29,6 +29,7 @@ import com.olp.annotations.MultiTenant;
 import com.olp.fwk.common.Constants;
 import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.TenantBasedSearchFilterFactory;
+import java.io.Serializable;
 
 /*
  * Trilla Inc Confidential
@@ -43,12 +44,13 @@ import com.olp.jpa.common.TenantBasedSearchFilterFactory;
       , uniqueConstraints=@UniqueConstraint(columnNames={"tenant_id", "warehouse_code"})
 )
 @NamedQueries({
+    
 })
 @Cacheable(true)
 @Indexed(index="UnitTest")
-@FullTextFilterDef(name="filter-dept-by-tenant", impl=TenantBasedSearchFilterFactory.class)
+@FullTextFilterDef(name="filter-wh-locator-by-tenant", impl=TenantBasedSearchFilterFactory.class)
 @MultiTenant(level = MultiTenant.Levels.ONE_TENANT)
-public class WarehouseLocatorEntity {
+public class WarehouseLocatorEntity implements Serializable {
 
   private static final long serialVersionUID = -1L;
   

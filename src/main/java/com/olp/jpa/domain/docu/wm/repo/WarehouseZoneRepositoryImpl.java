@@ -10,6 +10,7 @@ import com.olp.fwk.common.IContext;
 import com.olp.jpa.common.AbstractRepositoryImpl;
 import com.olp.jpa.domain.docu.wm.model.WarehouseZoneEntity;
 import com.olp.jpa.domain.docu.wm.repo.WarehouseZoneRepository;
+import java.util.List;
 
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
@@ -22,24 +23,41 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository("warehouseZoneRepository")
 public class WarehouseZoneRepositoryImpl extends AbstractRepositoryImpl<WarehouseZoneEntity, Long> implements WarehouseZoneRepository {
     
-    //@Override
-    @Transactional(readOnly=true)
-    public WarehouseZoneEntity findByZoneCode(String warehouseCode, String locCode) {
+    @Override
+    @Transactional(readOnly=true, noRollbackFor={javax.persistence.NoResultException.class})
+    public WarehouseZoneEntity findByZoneCode(String zoneCode) {
         
         IContext ctx = ContextManager.getContext();
         String tid = ctx.getTenantId();
         
         TypedQuery<WarehouseZoneEntity> query = getEntityManager().createNamedQuery("WarehouseZoneEntity.findByZoneCode", WarehouseZoneEntity.class);
-        query.setParameter("warehouseCode", warehouseCode); 
-        query.setParameter("locCode", locCode); 
+        query.setParameter("zoneCode", zoneCode); 
+        query.setParameter("tenant", tid);
         
         WarehouseZoneEntity bean = query.getSingleResult();
         
         return(bean);
     }
+    
+    @Override
+    @Transactional(readOnly=true, noRollbackFor={javax.persistence.NoResultException.class})
+    public List<WarehouseZoneEntity> findByWhCode(String whCode) {
+        
+        IContext ctx = ContextManager.getContext();
+        String tid = ctx.getTenantId();
+        
+        TypedQuery<WarehouseZoneEntity> query = getEntityManager().createNamedQuery("WarehouseZoneEntity.findByWhCode", WarehouseZoneEntity.class);
+        query.setParameter("whCode", whCode); 
+        query.setParameter("tenant", tid);
+        
+        List<WarehouseZoneEntity> bean = query.getResultList();
+        
+        return(bean);
+        
+    }
 
     @Override
     public String getLazyLoadElements() {
-        return("t.lpnCode");
+        return("t.locators");
     }
 }

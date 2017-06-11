@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.olp.jpa.common.RevisionControlBean;
+import java.io.Serializable;
 
 /*
  * My Inc Confidential
@@ -17,7 +18,7 @@ import com.olp.jpa.common.RevisionControlBean;
 @XmlRootElement(name="warehouse-loc", namespace="http://trilia-cloud.com/schema/entity/wm")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder={ "id", "tenantId", "zoneRef", "rowValue", "rackValue", "binValue", "isEnabled", "revisionControl" })
-public class WarehouseLocator {
+public class WarehouseLocator implements Serializable {
 
   @XmlElement(name="warehouse-id")
   private Long id;
