@@ -8,11 +8,8 @@ package com.olp.jpa.domain.docu.wm.repo;
 import com.olp.fwk.common.ContextManager;
 import com.olp.fwk.common.IContext;
 import com.olp.jpa.common.AbstractRepositoryImpl;
-import com.olp.jpa.domain.docu.wm.model.WarehouseTxnEntity;
-import com.olp.jpa.domain.docu.wm.repo.WarehouseTxnRepository;
-
-import java.util.Date;
-import java.util.List;
+import com.olp.jpa.domain.docu.wm.model.InwardShipmentEntity;
+import com.olp.jpa.domain.docu.wm.repo.InwardShipmentRepository;
 
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
@@ -22,23 +19,23 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author raghosh
  */
-@Repository("warehouseTxnRepository")
-public class WarehouseTxnRepositoryImpl extends AbstractRepositoryImpl<WarehouseTxnEntity, Long> implements WarehouseTxnRepository {
+@Repository("inwardShipmentRepository")
+public class InwardShipmentRepositoryImpl extends AbstractRepositoryImpl<InwardShipmentEntity, Long> implements InwardShipmentRepository {
     
     //@Override
     @Transactional(readOnly=true)
-    public List<WarehouseTxnEntity> findTransactions(String whCode, Date startDate, Date endDate) {
+    public InwardShipmentEntity findByLpnCode(String lpnCode) {
         
         IContext ctx = ContextManager.getContext();
         String tid = ctx.getTenantId();
         
-        TypedQuery<WarehouseTxnEntity> query = getEntityManager().createNamedQuery("WarehouseTxnEntity.findTransactions", WarehouseTxnEntity.class);
-        query.setParameter("warehouseCode", whCode); // TODO: Sanitize input, although low risk due to binding
+        TypedQuery<InwardShipmentEntity> query = getEntityManager().createNamedQuery("InwardShipmentEntity.findByCode", InwardShipmentEntity.class);
+        query.setParameter("code", lpnCode); // TODO: Sanitize input, although low risk due to binding
         query.setParameter("tenant", tid);
         
-        List<WarehouseTxnEntity> beanList = query.getResultList();
+        InwardShipmentEntity bean = query.getSingleResult();
         
-        return(beanList);
+        return(bean);
     }
 
     @Override

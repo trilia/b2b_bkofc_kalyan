@@ -8,11 +8,8 @@ package com.olp.jpa.domain.docu.wm.repo;
 import com.olp.fwk.common.ContextManager;
 import com.olp.fwk.common.IContext;
 import com.olp.jpa.common.AbstractRepositoryImpl;
-import com.olp.jpa.domain.docu.wm.model.WarehouseTxnEntity;
-import com.olp.jpa.domain.docu.wm.repo.WarehouseTxnRepository;
-
-import java.util.Date;
-import java.util.List;
+import com.olp.jpa.domain.docu.wm.model.InwardShipmentLineEntity;
+import com.olp.jpa.domain.docu.wm.repo.InwardShipmentLineRepository;
 
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
@@ -22,23 +19,23 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author raghosh
  */
-@Repository("warehouseTxnRepository")
-public class WarehouseTxnRepositoryImpl extends AbstractRepositoryImpl<WarehouseTxnEntity, Long> implements WarehouseTxnRepository {
+@Repository("inwardShipmentLineRepository")
+public class InwardShipmentLineRepositoryImpl extends AbstractRepositoryImpl<InwardShipmentLineEntity, Long> implements InwardShipmentLineRepository {
     
     //@Override
     @Transactional(readOnly=true)
-    public List<WarehouseTxnEntity> findTransactions(String whCode, Date startDate, Date endDate) {
+    public InwardShipmentLineEntity findByLpnCode(String lpnCode) {
         
         IContext ctx = ContextManager.getContext();
         String tid = ctx.getTenantId();
         
-        TypedQuery<WarehouseTxnEntity> query = getEntityManager().createNamedQuery("WarehouseTxnEntity.findTransactions", WarehouseTxnEntity.class);
-        query.setParameter("warehouseCode", whCode); // TODO: Sanitize input, although low risk due to binding
+        TypedQuery<InwardShipmentLineEntity> query = getEntityManager().createNamedQuery("InwardShipmentLineEntity.findByCode", InwardShipmentLineEntity.class);
+        query.setParameter("code", lpnCode); // TODO: Sanitize input, although low risk due to binding
         query.setParameter("tenant", tid);
         
-        List<WarehouseTxnEntity> beanList = query.getResultList();
+        InwardShipmentLineEntity bean = query.getSingleResult();
         
-        return(beanList);
+        return(bean);
     }
 
     @Override

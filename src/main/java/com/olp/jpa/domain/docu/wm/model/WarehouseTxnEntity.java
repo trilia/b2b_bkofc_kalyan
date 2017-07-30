@@ -28,6 +28,7 @@ import org.hibernate.search.annotations.Store;
 import com.olp.annotations.KeyAttribute;
 import com.olp.annotations.MultiTenant;
 import com.olp.jpa.common.TenantBasedSearchFilterFactory;
+import com.olp.jpa.domain.docu.inv.model.ProductSkuEntity;
 
 /*
  * Trilla Inc Confidential
@@ -62,7 +63,7 @@ public class WarehouseTxnEntity {
   @ManyToOne
   @JoinColumn(name="owning_wh_ref")
   @ContainedIn
-  private String owningWhRef;
+  private WarehouseEntity owningWhRef;
   
   @Column(name="owning_wh_ref_id", nullable=false)
   private Long owningWhRefId;
@@ -72,7 +73,7 @@ public class WarehouseTxnEntity {
     @Field,
     @Field(name="other-wh-code", index=Index.YES, analyze=Analyze.NO, store=Store.NO)
   })
-  private String otherWhRef;
+  private WarehouseEntity otherWhRef;
   
   @Column(name="destination_wh_ref_id", nullable=false)
   private Long otherWhRefId;
@@ -140,10 +141,12 @@ public class WarehouseTxnEntity {
   })
   private String quantityUOM;
   
+
   @ManyToOne
   @JoinColumn(name="product_sku_ref")
   @ContainedIn
-  private String productSkuRef;
+  private ProductSkuEntity productSkuRef;
+
   
   @Column(name="sku_ref_id", nullable=false)
   private String skuRefId;
@@ -183,7 +186,7 @@ public class WarehouseTxnEntity {
   @ManyToOne
   @JoinColumn(name="ship_line_ref")
   @ContainedIn
-  private String shipLineRef;
+  private InwardShipmentLineEntity shipLineRef;
   
   private String shipmentNumber;
   
@@ -222,14 +225,14 @@ public class WarehouseTxnEntity {
   /**
    * @return the owningWhRef
    */
-  public String getOwningWhRef() {
+  public WarehouseEntity getOwningWhRef() {
     return owningWhRef;
   }
 
   /**
    * @param owningWhRef the owningWhRef to set
    */
-  public void setOwningWhRef(String owningWhRef) {
+  public void setOwningWhRef(WarehouseEntity owningWhRef) {
     this.owningWhRef = owningWhRef;
   }
 
@@ -250,14 +253,14 @@ public class WarehouseTxnEntity {
   /**
    * @return the otherWhRef
    */
-  public String getOtherWhRef() {
+  public WarehouseEntity getOtherWhRef() {
     return otherWhRef;
   }
 
   /**
    * @param otherWhRef the otherWhRef to set
    */
-  public void setOtherWhRef(String otherWhRef) {
+  public void setOtherWhRef(WarehouseEntity otherWhRef) {
     this.otherWhRef = otherWhRef;
   }
 
@@ -404,14 +407,14 @@ public class WarehouseTxnEntity {
   /**
    * @return the productSkuRef
    */
-  public String getProductSkuRef() {
+  public ProductSkuEntity getProductSkuRef() {
     return productSkuRef;
   }
 
   /**
    * @param productSkuRef the productSkuRef to set
    */
-  public void setProductSkuRef(String productSkuRef) {
+  public void setProductSkuRef(ProductSkuEntity productSkuRef) {
     this.productSkuRef = productSkuRef;
   }
 
@@ -502,14 +505,14 @@ public class WarehouseTxnEntity {
   /**
    * @return the shipLineRef
    */
-  public String getShipLineRef() {
+  public InwardShipmentLineEntity getShipLineRef() {
     return shipLineRef;
   }
 
   /**
    * @param shipLineRef the shipLineRef to set
    */
-  public void setShipLineRef(String shipLineRef) {
+  public void setShipLineRef(InwardShipmentLineEntity shipLineRef) {
     this.shipLineRef = shipLineRef;
   }
 
