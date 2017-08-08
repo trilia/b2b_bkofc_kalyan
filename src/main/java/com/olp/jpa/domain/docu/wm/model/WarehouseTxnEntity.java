@@ -4,6 +4,7 @@ import java.util.Enumeration;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,10 +24,12 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.FullTextFilterDef;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Store;
 
 import com.olp.annotations.KeyAttribute;
 import com.olp.annotations.MultiTenant;
+import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.TenantBasedSearchFilterFactory;
 import com.olp.jpa.domain.docu.inv.model.ProductSkuEntity;
 
@@ -192,7 +195,10 @@ public class WarehouseTxnEntity {
   
   private String lineNumber;
 
-  private String revisionControl;
+  //private RevisionControlBean revisionControl;
+  @Embedded
+  @IndexedEmbedded
+  private RevisionControlBean revisionControl;
 
   /**
    * @return the id
@@ -547,14 +553,14 @@ public class WarehouseTxnEntity {
   /**
    * @return the revisionControl
    */
-  public String getRevisionControl() {
+  public RevisionControlBean getRevisionControl() {
     return revisionControl;
   }
 
   /**
    * @param revisionControl the revisionControl to set
    */
-  public void setRevisionControl(String revisionControl) {
+  public void setRevisionControl(RevisionControlBean revisionControl) {
     this.revisionControl = revisionControl;
   }
 }
