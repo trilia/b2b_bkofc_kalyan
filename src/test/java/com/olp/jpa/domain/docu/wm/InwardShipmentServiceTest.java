@@ -10,13 +10,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -40,6 +43,24 @@ public class InwardShipmentServiceTest extends BaseSpringAwareTest {
   @Autowired
   @Qualifier("inwardShipmentService")
   private InwardShipmentService __service;
+  
+  @Before
+  public void before() {
+      
+    __service.deleteAll(false); // deletes all referenced entities
+      setupData();
+  }
+  
+  private void setupData() {
+    
+    InwardShipmentEntity me = new InwardShipmentEntity();
+    
+    Calendar.Builder builder = new Calendar.Builder();
+    builder.setTimeZone(TimeZone.getTimeZone("GMT"));
+    
+    __service.add(me);
+  }
+
   
   //@Test
   public void test_addInwardShipment() {

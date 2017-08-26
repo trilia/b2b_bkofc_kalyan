@@ -15,10 +15,15 @@ import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.SortCriteriaBean;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+
+import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import static org.junit.Assert.*;
@@ -35,6 +40,23 @@ public class LotBalanceServiceTest extends BaseSpringAwareTest {
     @Qualifier("lotBalanceService")
     private LotBalanceService __service;
     
+    @Before
+    public void before() {
+        
+      __service.deleteAll(false); // deletes all referenced entities
+        setupData();
+    }
+    
+    private void setupData() {
+      
+      LotBalanceEntity me = new LotBalanceEntity();
+      
+      Calendar.Builder builder = new Calendar.Builder();
+      builder.setTimeZone(TimeZone.getTimeZone("GMT"));
+      
+      __service.add(me);
+  }
+
     //@Test
     public void test_addLotBalance() {
         LotBalanceEntity lotBalance = makeLotBalance();

@@ -11,12 +11,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -27,6 +30,7 @@ import com.olp.fwk.common.ContextManager;
 import com.olp.fwk.common.IContext;
 import com.olp.jpa.common.RevisionControlBean;
 import com.olp.jpa.common.SortCriteriaBean;
+import com.olp.jpa.domain.docu.inv.model.LotBalanceEntity;
 import com.olp.jpa.domain.docu.wm.model.InwardShipmentLine;
 import com.olp.jpa.domain.docu.wm.model.InwardShipmentLineEntity;
 import com.olp.jpa.domain.docu.wm.service.InwardShipmentLineService;
@@ -41,6 +45,24 @@ public class InwardShipmentLineServiceTest extends BaseSpringAwareTest {
   @Qualifier("inwardShipmentLineService")
   private InwardShipmentLineService __service;
   
+  @Before
+  public void before() {
+      
+    __service.deleteAll(false); // deletes all referenced entities
+      setupData();
+  }
+  
+  private void setupData() {
+    
+    InwardShipmentLineEntity me = new InwardShipmentLineEntity();
+    
+    Calendar.Builder builder = new Calendar.Builder();
+    builder.setTimeZone(TimeZone.getTimeZone("GMT"));
+    
+    __service.add(me);
+  }
+
+
   //@Test
   public void test_addInwardShipmentLine() {
       InwardShipmentLineEntity inwardShipmentLine = makeInwardShipmentLine();

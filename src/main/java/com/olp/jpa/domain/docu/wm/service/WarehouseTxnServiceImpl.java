@@ -26,7 +26,7 @@ import com.olp.jpa.domain.docu.wm.repo.LPNumberRepository;
  *
  * @author raghosh
  */
-@Service("lpnPartService")
+@Service("warehouseTxnService")
 public class WarehouseTxnServiceImpl extends AbstractServiceImpl<WarehouseTxnEntity, Long> implements WarehouseTxnService {
 
   @Autowired
